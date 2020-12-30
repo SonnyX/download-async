@@ -1,9 +1,13 @@
-pub use http::{header, HeaderMap, Method, Request, Response, StatusCode, Uri, Version};
+pub use http;
 pub use hyper::body::Body;
-pub mod progress;
-pub mod download;
-pub mod error;
+mod progress;
+pub use progress::Progress;
+mod download;
+pub use download::download;
+mod error;
+pub use error::StatusError;
 mod dns;
+pub use dns::SocketAddrs;
 
 
 #[cfg(test)]
