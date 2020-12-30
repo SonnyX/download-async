@@ -7,11 +7,12 @@ use hyper::body::HttpBody;
 use hyper::client::HttpConnector;
 use hyper_tls::HttpsConnector;
 use crate::dns::SocketAddrs;
+use http::response::Parts;
 
 type Request<T> = crate::http::Request<T>;
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
-pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mut impl Write, https_only: bool, progress: &mut Option<&mut impl Progress>, socket_addrs: Option<SocketAddrs>) -> Result<(), Error> where T::Data: Send, T::Error: Into<Error> {
+pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mut impl Write, https_only: bool, progress: &mut Option<&mut impl Progress>, socket_addrs: Option<SocketAddrs>) -> Result<Parts, Error> where T::Data: Send, T::Error: Into<Error> {
     let res;
 
     if let Some(socket_addrs) = socket_addrs {    
@@ -35,15 +36,14 @@ pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mu
     }
 
     let status = res.status();
-
+    let (parts, mut body) = res.into_parts();
     if status == 200 || status == 206 {
         if progress.is_some() {
-            if let Some(content_length) = res.headers().get("content-length") {
+            if let Some(content_length) = parts.headers.get("content-length") {
                 let content_length : usize = content_length.to_str().expect("Couldn't convert content-length value to str.").parse().expect("Couldn't parse content-length as a usize.");
                 progress.as_deref_mut().map(|progress| progress.set_file_size(content_length)).unwrap().await;
             }
         }
-        let mut body = res.into_body();
         while !body.is_end_stream() {
             // todo: Add timeout for chunk
             if let Some(chunk) = body.data().await {
@@ -51,9 +51,9 @@ pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mu
                 to.write_all(&chunk)?;
             }
         }
-        Ok::<(), Error>(())
+        Ok::<Parts, Error>(parts)
     } else {
-        Err::<(), Error>(StatusError::from(status))
+        Err::<Parts, Error>(StatusError::from(status))
     }
 }
 
