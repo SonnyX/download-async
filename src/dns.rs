@@ -32,15 +32,6 @@ impl ToSocketAddrs for SocketAddrs {
   }
 }
 
-
-/*impl Iterator for SocketAddrs {
-  type Item = std::net::IpAddr;
-
-  fn next(&mut self) -> Option<Self::Item> {
-      self.inner.next().map(|sa| sa.ip())
-  }
-}
-*/
 impl Iterator for SocketAddrs {
   type Item = std::net::SocketAddr;
 
