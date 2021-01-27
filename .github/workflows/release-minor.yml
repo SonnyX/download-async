@@ -1,0 +1,39 @@
+name: Release minor update
+
+on:
+  workflow_dispatch:
+
+jobs:
+  commit-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get version from file
+        id: cargo_version
+        run: 
+          version=$(cat Cargo.toml | grep version | head -n1);
+          version=${version//[*version| |=|\"]};
+          echo '::set-output name=version::'${version};
+
+      - name: Bump minor version
+        id: minor_version
+        run: 
+          IFS='.' read -ra ver <<< ${{ steps.cargo_version.outputs.version }};
+          version=${ver[0]}.${ver[1]}.${ver[2]+1};
+          sed -i '0,/version[ |=|\"|0-9|.]*/s//version = "'$version'"/' Cargo.toml;
+          echo '::set-output name=version::'${version};
+
+      - name: Git Commit/Push Changes
+        uses: actions-x/commit@v2
+        with:
+          message: Release minor version ${{ steps.minor_version.outputs.version }}
+          files: Cargo.toml
+          name: SonnyX
+          email: randy@vonderweide.nl
+
+      - name: publish crate
+        uses: katyo/publish-crates@v1
+        with:
+          registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
