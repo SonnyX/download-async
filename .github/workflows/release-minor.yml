@@ -21,7 +21,8 @@ jobs:
         id: minor_version
         run: 
           IFS='.' read -ra ver <<< ${{ steps.cargo_version.outputs.version }};
-          version=${ver[0]}.${ver[1]}.${ver[2]+1};
+          version=$((${ver[0]})).$((${ver[1]})).$((${ver[2]}+1));
+          echo 'Bumping project from version '${{ steps.cargo_version.outputs.version }}' to version '$version;
           sed -i '0,/version[ |=|\"|0-9|.]*/s//version = "'$version'"/' Cargo.toml;
           echo '::set-output name=version::'${version};
 
