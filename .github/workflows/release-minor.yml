@@ -33,7 +33,7 @@ jobs:
         uses: actions-x/commit@v2
         with:
           message: Release minor version ${{ steps.minor_version.outputs.version }}
-          files: Cargo.toml
+          files: Cargo.toml Cargo.lock
           name: SonnyX
           email: randy@vonderweide.nl
 
