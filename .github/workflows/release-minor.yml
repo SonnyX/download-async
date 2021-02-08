@@ -25,7 +25,10 @@ jobs:
           echo 'Bumping project from version '${{ steps.cargo_version.outputs.version }}' to version '$version;
           sed -i '0,/version[ |=|\"|0-9|.]*/s//version = "'$version'"/' Cargo.toml;
           echo '::set-output name=version::'${version};
-
+          
+      - name: Cargo Update
+        run: cargo update
+        
       - name: Git Commit/Push Changes
         uses: actions-x/commit@v2
         with:
