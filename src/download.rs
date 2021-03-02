@@ -48,6 +48,7 @@ pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mu
             // todo: Add timeout for chunk
             if let Some(chunk) = body.data().await {
                 let chunk = chunk?;
+                progress.as_deref_mut().map(|progress| progress.add_to_progress(chunk.len())).unwrap().await;
                 to.write_all(&chunk)?;
             }
         }
