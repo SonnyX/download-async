@@ -6,7 +6,8 @@ extern crate futures;
 use futures::join;
 use async_trait::async_trait;
 use tokio::time::sleep;
-use std::sync::{Arc,Mutex};
+use std::sync::Arc;
+use tokio::sync::Mutex;
 use std::time::Duration;
 
 #[derive(Debug, Clone)]
@@ -27,23 +28,23 @@ impl Progress {
 #[async_trait]
 impl download_async::Progress for Progress {
   async fn get_file_size(&self) -> usize {
-    self.file_size.lock().unwrap().clone()
+    self.file_size.lock().await.clone()
   }
 
   async fn get_progess(&self) -> usize {
-    self.downloaded.lock().unwrap().clone()
+    self.downloaded.lock().await.clone()
   }
 
   async fn set_file_size(&mut self, size: usize) {
-    *(self.file_size.lock().unwrap()) = size;
+    *(self.file_size.lock().await) = size;
   }
 
   async fn add_to_progress(&mut self, amount: usize) {
-    *(self.downloaded.lock().unwrap()) += amount;
+    *(self.downloaded.lock().await) += amount;
   }
 
   async fn remove_from_progress(&mut self, amount: usize) {
-    *(self.downloaded.lock().unwrap()) -= amount;
+    *(self.downloaded.lock().await) -= amount;
   }
 }
 
