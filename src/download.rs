@@ -12,7 +12,8 @@ use http::response::Parts;
 type Request<T> = crate::http::Request<T>;
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
-pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mut impl Write, https_only: bool, progress: &mut Option<&mut impl Progress>, socket_addrs: Option<SocketAddrs>) -> Result<Parts, Error> where T::Data: Send, T::Error: Into<Error> {
+
+pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mut impl Write, https_only: bool, progress: &mut Option<Box<dyn Progress>>, socket_addrs: Option<SocketAddrs>) -> Result<Parts, Error> where T::Data: Send, T::Error: Into<Error> {
     let res;
 
     if let Some(socket_addrs) = socket_addrs {    
@@ -57,15 +58,3 @@ pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mu
         Err::<Parts, Error>(StatusError::from(status))
     }
 }
-
-/*
-pub fn download_blocking(self, progress: impl Progress, to: impl Write) -> Result<(), Box<dyn Error>>  {
-    let mut rt = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
-    let result = rt.enter(|| {
-        rt.spawn(async move {
-        self.download(progress, to).await;
-        })
-    });
-    let _ = rt.block_on(result).unexpected(concat!(file!(),":",line!()));
-}
-*/
