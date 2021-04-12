@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Body","A stream of `Bytes`, used when receiving bodies."],["Downloader",""],["SocketAddrs",""],["StatusError",""]],"trait":[["Progress",""]]});
