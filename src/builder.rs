@@ -9,7 +9,7 @@ type Error = Box<dyn std::error::Error + Send + Sync>;
 pub struct Downloader {
   request: Option<http::request::Builder>,
   https_only: bool,
-  progress: Option<Box<dyn Progress>>,
+  progress: Option<Box<dyn Progress + Send>>,
   sockets: Option<SocketAddrs>
 }
 
@@ -48,7 +48,7 @@ impl Downloader {
     self
   }
 
-  pub fn use_progress<T: Progress + 'static>(&mut self, progress: T) -> &mut Self {
+  pub fn use_progress<T: Progress + Send + 'static>(&mut self, progress: T) -> &mut Self {
     self.progress = Some(Box::new(progress));
     self
   }

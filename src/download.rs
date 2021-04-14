@@ -13,7 +13,7 @@ type Request<T> = crate::http::Request<T>;
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
 
-pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mut impl Write, https_only: bool, progress: &mut Option<Box<dyn Progress>>, socket_addrs: Option<SocketAddrs>) -> Result<Parts, Error> where T::Data: Send, T::Error: Into<Error> {
+pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mut impl Write, https_only: bool, progress: &mut Option<Box<dyn Progress + Send>>, socket_addrs: Option<SocketAddrs>) -> Result<Parts, Error> where T::Data: Send, T::Error: Into<Error> {
     let res;
 
     if let Some(socket_addrs) = socket_addrs {    
