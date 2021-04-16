@@ -59,7 +59,7 @@ checksum = "ea221b5284a47e40033bf9b66f35f984ec0ea2931eb03505246cd27a963f981b"
 
 [[package]]
 name = "download-async"
-version = "0.10.1"
+version = "0.10.2"
 dependencies = [
  "async-trait",
  "futures",
