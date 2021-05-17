@@ -24,10 +24,10 @@ native-tls = "0.2.7"
 tower = "0.4"
 hyper = { version="0.14", features = ["client", "tcp", "http1", "http2"] }
 hyper-tls = "0.5"
-tokio = { version = "1.5", features = ["rt"] }
+tokio = { version = "1.6", features = ["rt"] }
 
 [dev-dependencies]
-tokio = { version = "1.5", features = ["rt", "macros", "rt-multi-thread"] }
+tokio = { version = "1.6", features = ["rt", "macros", "rt-multi-thread"] }
 futures = "0.3"
 
 [[example]]
