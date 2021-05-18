@@ -1,16 +1,19 @@
-use crate::progress::Progress;
+use crate::{decoder::Accepts, progress::Progress};
 use std::io::Write;
 use hyper::body::HttpBody;
 use crate::dns::SocketAddrs;
-use http::response::Parts;
+use http::{HeaderValue, header, response::Parts};
+use crate::error::Error;
 
-type Error = Box<dyn std::error::Error + Send + Sync>;
+type BoxError = Box<dyn std::error::Error + Send + Sync>;
+
 
 pub struct Downloader {
   request: Option<http::request::Builder>,
   https_only: bool,
   progress: Option<Box<dyn Progress + Send>>,
-  sockets: Option<SocketAddrs>
+  sockets: Option<SocketAddrs>,
+  disabled_compression: bool
 }
 
 impl Downloader {
@@ -19,7 +22,8 @@ impl Downloader {
       request: Some(http::Request::builder()),
       https_only: true,
       progress: None,
-      sockets: None
+      sockets: None,
+      disabled_compression: false
     }
   }
 
@@ -53,7 +57,16 @@ impl Downloader {
     self
   }
 
-  pub async fn download<T: HttpBody + Send + 'static>(mut self, body: T, to: &mut impl Write) -> Result<Parts, Error>  where T::Data: Send, T::Error: Into<Error> {
-    crate::download::download(self.request.take().expect("Failed to take request-builder").body(body)?, to, self.https_only, &mut self.progress, self.sockets).await
+  pub fn disable_compression(&mut self) -> &mut Self {
+    self.disabled_compression = true;
+    self
+  }
+
+  pub async fn download<T: HttpBody + Send + 'static>(mut self, body: T, to: &mut impl Write) -> Result<Parts, Error>  where T::Data: Send, T::Error: Into<BoxError> {
+    if !self.disabled_compression {
+      self.headers().ok_or_else(|| Error::NoneValue(format!("")))?.append(header::ACCEPT_ENCODING, HeaderValue::from_str(Accepts::default().as_str().ok_or_else(|| Error::NoneValue(format!("Couldn't unwrap Accepts")))?)?);
+    }
+    let body = self.request.take().expect("Failed to take request-builder").body(body)?;
+    crate::download::download(body, to, self.https_only, &mut self.progress, self.sockets).await
   }
 }
