@@ -23,7 +23,7 @@ pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mu
         let mut https_connector = HttpsConnector::new_with_connector(http_connector);
         https_connector.https_only(https_only);
         let client = Client::builder().build::<_, T>(https_connector);
-    
+
         // Send request
         res = client.request(request).await.or_else(|e| Err(Error::HyperError(e.into())))?;
     } else {
@@ -55,6 +55,8 @@ pub async fn download<T: HttpBody + Send + 'static>(request: Request<T>, to: &mu
                     progress.as_deref_mut().map(|progress| progress.add_to_progress(chunk.len())).unwrap().await;
                 }
                 to.write_all(&chunk)?;
+            } else {
+                break;
             }
         }
         Ok::<Parts, Error>(parts)
