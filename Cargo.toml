@@ -28,7 +28,7 @@ tokio = { version = "1.10", features = ["rt"] }
 # needed for decoder.rs
 pin-project-lite = "0.2.7"
 http-body = "0.4.3"
-bytes = "1.0.1"
+bytes = "1.1.0"
 futures-core = { version = "0.3.16", default-features = false }
 futures-util = { version = "0.3.16", default-features = false }
 async-compression = { version = "0.3.8", default-features = false, features = ["tokio"], optional = true }
