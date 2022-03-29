@@ -19,7 +19,7 @@ include = [
 log = "0.4"
 http = "0.2"
 async-trait = "0.1"
-native-tls = "0.2.9"
+native-tls = "0.2.10"
 tower = "0.4"
 hyper = { version="0.14", features = ["client", "tcp", "http1", "http2", "stream"] }
 hyper-tls = "0.5"
