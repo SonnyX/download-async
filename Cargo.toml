@@ -32,7 +32,7 @@ bytes = "1.1.0"
 futures-core = { version = "0.3.21", default-features = false }
 futures-util = { version = "0.3.21", default-features = false }
 async-compression = { version = "0.3.12", default-features = false, features = ["tokio"], optional = true }
-tokio-util = { version = "0.7.0", default-features = false, features = ["codec", "io"], optional = true }
+tokio-util = { version = "0.7.1", default-features = false, features = ["codec", "io"], optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.17", features = ["rt", "macros", "rt-multi-thread"] }
