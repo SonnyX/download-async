@@ -30,7 +30,7 @@ jobs:
         run: cargo update
         
       - name: Git Commit/Push Changes
-        uses: actions-x/commit@v2
+        uses: actions-x/commit@v6
         with:
           message: Release minor version ${{ steps.minor_version.outputs.version }}
           files: Cargo.toml Cargo.lock
@@ -43,9 +43,12 @@ jobs:
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
       - name: Create a Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: fregante/release-with-changelog@v3
         with:
-          tag_name: ${{ steps.minor_version.outputs.version }}
-          release_name: Release ${{ steps.minor_version.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.minor_version.outputs.version }}
+          title: Release ${{ steps.minor_version.outputs.version }}
+          template: |
+            ### Changelog {range}
+
+            {commits}
