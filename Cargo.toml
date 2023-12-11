@@ -17,7 +17,7 @@ include = [
 
 [dependencies]
 log = "0.4"
-http = "0.2"
+http = "1.0"
 async-trait = "0.1"
 native-tls = "0.2.11"
 tower = "0.4"
