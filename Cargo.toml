@@ -22,7 +22,7 @@ async-trait = "0.1"
 native-tls = "0.2.11"
 tower = "0.4"
 hyper = { version="0.14", features = ["client", "tcp", "http1", "http2", "stream"] }
-hyper-tls = "0.5"
+hyper-tls = "0.6"
 tokio = { version = "1.35", features = ["rt"] }
 
 # needed for decoder.rs
